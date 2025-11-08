@@ -1,6 +1,8 @@
 package com.dnikitin.map;
 import org.junit.jupiter.api.*;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MyMapTest {
@@ -96,4 +98,67 @@ public class MyMapTest {
 
         assertFalse(map.contains(2));
     }
+
+    @Test
+    public void getListOfKeysOfEmptyMap(){
+        assertTrue(map.keys().isEmpty());
+    }
+
+    @Test
+    public void getListOfKeysOfNonEmptyMap(){
+        List<Integer> expectedKeys = List.of(1, 2, 3);
+
+        map.put(1, "one");
+        map.put(2, "two");
+        map.put(3, "three");
+
+        assertEquals(expectedKeys, map.keys());
+    }
+
+    //Testing of AVL private methods correct working
+    @Test
+    public void testBalancingAfterLeftLeftCase() {
+        map.put(30, "A");
+        map.put(20, "B");
+        map.put(10, "C"); // rotateRight()
+
+
+        List<Integer> expectedKeyOrder = List.of(10, 20, 30);
+        assertEquals(expectedKeyOrder, map.keys());
+        assertEquals(3, map.size());
+    }
+
+    @Test
+    public void testBalancingAfterRightRightCase() {
+        map.put(10, "A");
+        map.put(20, "B");
+        map.put(30, "C"); // rotateLeft()
+
+        List<Integer> expectedKeyOrder = List.of(10, 20, 30);
+        assertEquals(expectedKeyOrder, map.keys());
+        assertEquals(3, map.size());
+    }
+
+    @Test
+    public void testBalancingAfterLeftRightCase() {
+        map.put(30, "A");
+        map.put(10, "B");
+        map.put(20, "C"); // rotateLeftRight()
+
+        List<Integer> expectedKeyOrder = List.of(10, 20, 30);
+        assertEquals(expectedKeyOrder, map.keys());
+        assertEquals(3, map.size());
+    }
+
+    @Test
+    public void testBalancingAfterRightLeftCase() {
+        map.put(10, "A");
+        map.put(30, "B");
+        map.put(20, "C"); // rotateRightLeft()
+
+        List<Integer> expectedKeyOrder = List.of(10, 20, 30);
+        assertEquals(expectedKeyOrder, map.keys());
+        assertEquals(3, map.size());
+    }
+
 }

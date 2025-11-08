@@ -1,4 +1,5 @@
 package com.dnikitin.map;
+
 import java.util.*;
 
 /**
@@ -102,14 +103,14 @@ public class MyMap<K, V> implements Map<K, V> {
     }
 
     @Override
-    public boolean contains(K key){
+    public boolean contains(K key) {
         return get(key) != null;
     }
 
     @Override
     public List<K> keys() {
         List<K> keys = new ArrayList<>();
-        for(EntryIterator it = new EntryIterator(); it.hasNext();){
+        for (EntryIterator it = new EntryIterator(); it.hasNext(); ) {
             keys.add(it.next().getKey());
         }
         return keys;
@@ -119,6 +120,7 @@ public class MyMap<K, V> implements Map<K, V> {
 
     /**
      * Returns the number of key-value mappings in this map.
+     *
      * @return the number of entries in this map
      */
     public int size() {
@@ -266,6 +268,7 @@ public class MyMap<K, V> implements Map<K, V> {
 
         /**
          * Performs a left rotation on this node.
+         *
          * @return The new root of the subtree.
          */
         private Node<K, V> rotateLeft() {
@@ -279,6 +282,7 @@ public class MyMap<K, V> implements Map<K, V> {
 
         /**
          * Performs a right rotation on this node.
+         *
          * @return The new root of the subtree.
          */
         private Node<K, V> rotateRight() {
@@ -292,6 +296,7 @@ public class MyMap<K, V> implements Map<K, V> {
 
         /**
          * Performs a Left-Right (LR) rotation on this node.
+         *
          * @return The new root of the subtree.
          */
         private Node<K, V> rotateLeftRight() {
@@ -301,6 +306,7 @@ public class MyMap<K, V> implements Map<K, V> {
 
         /**
          * Performs a Right-Left (RL) rotation on this node.
+         *
          * @return The new root of the subtree.
          */
         private Node<K, V> rotateRightLeft() {
@@ -311,6 +317,7 @@ public class MyMap<K, V> implements Map<K, V> {
         /**
          * Balances the subtree rooted at this node and returns the new root.
          * This method updates the node's height and performs necessary rotations.
+         *
          * @return The new, balanced root of the subtree.
          */
         private Node<K, V> balance() {
@@ -356,7 +363,7 @@ public class MyMap<K, V> implements Map<K, V> {
      * This implementation is "lazy" and uses O(h) extra space, where h is the
      * height of the tree.
      */
-    private final class EntryIterator implements Iterator<java.util.Map.Entry<K, V>>{
+    private final class EntryIterator implements Iterator<java.util.Map.Entry<K, V>> {
 
         //Symulacja rekurencji poprzez uzycie stosu
         private final Deque<Node<K, V>> stack = new ArrayDeque<>();
@@ -364,7 +371,7 @@ public class MyMap<K, V> implements Map<K, V> {
         /**
          * Creates an iterator starting at the smallest key.
          */
-        public EntryIterator(){
+        public EntryIterator() {
             pushAllLeftNodes(root);
         }
 
@@ -375,14 +382,14 @@ public class MyMap<K, V> implements Map<K, V> {
 
         @Override
         public java.util.Map.Entry<K, V> next() {
-            if(!hasNext()){
+            if (!hasNext()) {
                 throw new NoSuchElementException("No more elements in the map");
             }
 
             Node<K, V> node = stack.pop();
 
             //wyszukiwanie następnika(najmniejszy klucz w prawym poddrzewie)
-            if(node.right != null){
+            if (node.right != null) {
                 pushAllLeftNodes(node.right);
             }
             return node;
@@ -391,8 +398,8 @@ public class MyMap<K, V> implements Map<K, V> {
         /**
          * Pushes a node and all its left children onto the stack.
          */
-        private void pushAllLeftNodes(Node<K, V> node){
-            while(node != null){
+        private void pushAllLeftNodes(Node<K, V> node) {
+            while (node != null) {
                 stack.push(node);
                 node = node.left;
             }
