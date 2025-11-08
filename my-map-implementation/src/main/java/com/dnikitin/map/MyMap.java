@@ -1,9 +1,16 @@
 package com.dnikitin.map;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class MyMap<K, V> implements Map<K, V> {
+
+    public MyMap(Comparator<? super K> comparator) {
+        this.comparator = comparator;
+    }
+
+    public MyMap() {
+        this.comparator = (k1, k2) -> ((Comparable<K>) k1).compareTo(k2);
+    }
 
     @Override
     public boolean put(K key, V value) {
@@ -15,28 +22,50 @@ public class MyMap<K, V> implements Map<K, V> {
         return true;
     }
 
-    private Node<K, V> putHelper(Node<K, V> node, K key, V value) {
-        if (node == null) {
-            size++;
-            return new Node<>(key, value);
-
+    @Override
+    public boolean remove(K key) {
+        if (key == null) {
+            return false;
         }
-        int cmp = comparator.compare(key, node.key);
-
-        if (cmp < 0) {
-            node.left = putHelper(node.left, key, value);
-        } else if (cmp > 0) {
-            node.right = putHelper(node.right, key, value);
-        } else {
-            node.value = value;
-        }
-        return node.balance();
-
+        int oldSize = size;
+        root = removeHelper(root, key);
+        return oldSize > size;
     }
 
-    private int compare(K key1, K key2) {
-        return ((Comparable<K>) key1).compareTo(key2);
+    @Override
+    public V get(K key) {
+        if (key == null || root == null) {
+            return null;
+        }
+
+        Node<K, V> node = root;
+        while (node != null) {
+            int cmp = comparator.compare(key, node.key);
+            if (cmp < 0) {
+                node = node.left;
+            } else if (cmp > 0) {
+                node = node.right;
+            } else {
+                return node.value;
+            }
+        }
+        return null;
     }
+
+    @Override
+    public boolean contains(K key){
+        return get(key) != null;
+    }
+
+    @Override
+    public List<K> keys() {
+        List<K> keys = new ArrayList<>();
+        for(EntryIterator it = new EntryIterator(); it.hasNext();){
+            keys.add(it.next().getKey());
+        }
+        return keys;
+    }
+
 
     /**
      * Represents a single node (entry) within the AVL tree.
@@ -52,7 +81,7 @@ public class MyMap<K, V> implements Map<K, V> {
      * @param <K> the type of key maintained by this node
      * @param <V> the type of value associated with the key
      */
-    private static final class Node<K, V> {
+    private static final class Node<K, V> implements java.util.Map.Entry<K, V> {
         K key;
         V value;
         Node<K, V> left;
@@ -128,41 +157,63 @@ public class MyMap<K, V> implements Map<K, V> {
             }
             return this;
         }
+
+        @Override
+        public K getKey() {
+            return key;
+        }
+
+        @Override
+        public V getValue() {
+            return value;
+        }
+
+        @Override
+        public V setValue(V value) {
+            V oldValue = this.value;
+            this.value = value;
+            return oldValue;
+        }
+    }
+
+    private final class EntryIterator implements Iterator<java.util.Map.Entry<K, V>>{
+
+        private final Stack<Node<K, V>> stack = new Stack<>();
+
+        public EntryIterator(){
+            pushAllLeftNodes(root);
+        }
+
+        @Override
+        public boolean hasNext() {
+            return !stack.isEmpty();
+        }
+
+        @Override
+        public java.util.Map.Entry<K, V> next() {
+            if(!hasNext()){
+                throw new NoSuchElementException("No more elements");
+            }
+
+            Node<K, V> node = stack.pop();
+            if(node.right != null){
+                pushAllLeftNodes(node.right);
+            }
+            return node;
+        }
+
+        private void pushAllLeftNodes(Node<K, V> node){
+            while(node != null){
+                stack.push(node);
+                node = node.left;
+            }
+        }
     }
 
 
     private Node<K, V> root;
     private int size;
-
     private final Comparator<? super K> comparator;
-
-    public MyMap(Comparator<? super K> comparator) {
-        this.comparator = comparator;
-    }
-
-    public MyMap() {
-        this.comparator = (k1, k2) -> ((Comparable<K>) k1).compareTo(k2);
-    }
-
-    @Override
-    public boolean remove(K key) {
-        return false;
-    }
-
-    @Override
-    public V get(K key) {
-        return null;
-    }
-
-    @Override
-    public List<K> keys() {
-        return List.of();
-    }
-
-    @Override
-    public boolean contains(K key) {
-        return false;
-    }
 
     public int size() {
         return size;
@@ -170,5 +221,72 @@ public class MyMap<K, V> implements Map<K, V> {
 
     public boolean isEmpty() {
         return size == 0;
+    }
+
+    private Node<K, V> putHelper(Node<K, V> node, K key, V value) {
+        if (node == null) {
+            size++;
+            return new Node<>(key, value);
+
+        }
+        int cmp = comparator.compare(key, node.key);
+
+        if (cmp < 0) {
+            node.left = putHelper(node.left, key, value);
+        } else if (cmp > 0) {
+            node.right = putHelper(node.right, key, value);
+        } else {
+            node.value = value;
+        }
+        return node.balance();
+
+    }
+
+    private Node<K, V> removeHelper(Node<K, V> node, K key) {
+        if (node == null) {
+            return null;
+        }
+        int cmp = comparator.compare(key, node.key);
+        if (cmp < 0) {
+            node.left = removeHelper(node.left, key);
+        } else if (cmp > 0) {
+            node.right = removeHelper(node.right, key);
+        } else {
+            size--;
+            //wyszukany node jest lisciem
+            if (node.left == null && node.right == null) {
+                node = null;
+            }
+            //jest jedno dziecko (prawe)
+            else if (node.left == null) {
+                node = node.right;
+            }
+            //jest jedno dziecko (lewe)
+            else if (node.right == null) {
+                node = node.left;
+            }
+            //dwa dziecka
+            else {
+                Node<K, V> successor = node.right;
+                while (successor.left != null) {
+                    successor = successor.left;
+                }
+                node.key = successor.key;
+                node.value = successor.value;
+
+                node.right = removeHelper(node.right, successor.key);
+                size++;
+
+            }
+        }
+        if (node == null) {
+            return null;
+        }
+        return node.balance();
+    }
+
+
+    private int compare(K key1, K key2) {
+        return ((Comparable<K>) key1).compareTo(key2);
     }
 }
