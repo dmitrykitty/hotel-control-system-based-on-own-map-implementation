@@ -1,0 +1,227 @@
+Zadanie 1 (grupa poniedziałkowa: 17.11 (zajęcia wg. planu pon), grupy środowe: 19.11)
+Celem zadania jest nauka podstaw Javy, posługiwanie się podstawowymi klasami, interfejsami
+oraz wykorzystaniem mechanizmu dziedziczenia. Dodatkowo w ramach zadania należy
+napisać jako ćwiczenie własną implementację struktury danych Mapa (analogia do
+java.util.Map), która jest abstrakcją funkcji (przyporządkowuje elementom jednego zbioru
+dokładnie jeden element drugiego zbioru).
+Zadanie polega na napisaniu prostego systemu zarządzania hotelem. Interfejs programu jest
+tekstowy. Hotel posiada określoną liczbę pięter i określoną liczbę pokoi na każdym piętrze,
+każdy też posiada swoją cenę i pojemność. Pokoje w hotelu są numerowane liczbami
+całkowitymi, przy czym pierwsza cyfra oznacza nr piętra (np. 101 oznacza pierwszy pokój na
+pierwszym piętrze). Konfiguracja hotelu (liczba pięter, pokoje) jest albo zahardcodowana w
+programie (brak bonusów) albo wczytywana z pliku (bonus 1).
+Program oczekuje na podanie komendy, które są następujące (wielkość liter w komendzie nie
+ma znaczenia):
+• prices: listuje wszystkie pokoje wraz z cenami za dobę
+• view: program prosi o podanie nru pokoju a następnie wypisuje wszystkie informacje
+o pokoju wraz z gościem (jeśli jakiś jest zameldowany). Jeśli podany nr pokoju jest
+błędny to wyświetlany jest komunikat błędu.
+• checkin: pozwala na dokonanie rejestracji gościa w pokoju. Program prosi o podanie
+nru pokoju (jeśli podany pokój jest zajęty to wyświetlany jest komunikat błędu) a
+następnie prosi o podanie danych gości (gość główny oraz ew. dodatkowi jeśli
+pojemność pokoju jest większa) i oznacza pokój jako zajęty przez tego gościa, zapisuje
+też datę zameldowania (w przypadku niepodania daty zameldowania przyjmowana
+jest data bieżąca) oraz czas trwania pobytu oraz ew. informacje dodatkowe
+(opcjonalne).
+• checkout: operacja odwrotna do checkin. Program prosi o podanie nru pokoju (jeśli
+podany pokój jest wolny lub podano nieprawidłowy nr pokoju to wyświetlany jest
+komunikat błędu) a następnie oznacza pokój jako wolny, dokonuje kalkulacji
+należności za nocleg, na bazie różnicy pomiędzy datą zameldowania i datą
+wymeldowania (bieżąca)
+• list: listuje wszystkie pokoje wraz z informacjami o zajętości oraz gościach (dane gościa,
+data zameldowania, planowana data wymeldowania).
+• save: bonus 2 – zapis bieżącego stanu do pliku CSV lub XLSX
+• exit: wyjście z programu.
+W ramach zadania należy dokonać implementacji struktury mapy – generyczna klasa MyMap
+implementująca interface Map z metodami (zbiór minimalny metod: put(K, V), get(K),
+List<Key> keys(), remove(K)). Klasa powinna wykorzystywać mechanizm generics. Do
+implementacji klasy MyMap można wykorzystać klasy: java.util.List, java.util.LinkedList,
+java.util.ArrayList. Implementacja powinna bazować na dwóch listach: liście kluczy i liście
+wartości.
+Należy zapewnić pokrycie kodu implementacji wszystkich operacji testami.
+
+Bonus 1:
+Dane dotyczące konfiguracji hotelu mogą być zahardocowane. Jednak jeśli dane będą
+wczytywane z pliku .csv (lub XLSX) o strukturze: nr pokoju, opis, cena, dane gości opcjonalne,
+data zameldowania opcjonalnie – można zdobyć dodatkowe 0.5 stopnia.
+
+Bonus 2:
+Zapis aktualnego stanu hotelu do pliku CSV (lub XLSX) o strukturze j.w. – wszystkie pokoje wraz
+z gośćmi premiowany jest dodatkowym 0.5 stopnia.
+
+Kryteria oceny (na 4.0):
+• poprawność działania programu (na 3.0)
+• projekt, w tym (na 3.5):
+o wykorzystanie mechanizmów obiektowości przy realizacji komend
+(wskazówka: dodanie obsługi nowej komendy nie powinno się wiązać ze
+zmianami w istniejącym kodzie)
+o podział projektu na moduły/pakiety/klasy
+• Testy jednostkowe (logika działania plus testy struktury Map) (na 4)
+• Analiza Sonar Cube oraz badanie pokrycia testami (do +0.5 jeśli projekt wyczyszczony
+z issues blocker/critical/major – poza sugestią zmiany System.out na loggery)
+
+Wskazówki:
+a. Moduł główny aplikacji hotel-main, w którym będą klasy:
+    i. reprezentujące model (w odpowiednim pakiecie): Hotel, Room etc.
+    ii. reprezentujące komendy obsługiwane przez system (wykorzystaj
+    dziedziczenie): Command, ViewCommand, ListCommand, CheckinCommand
+    etc.
+b. Stwórz moduł pomocniczy hotel-utils, w którym będą m.in. klasa i interfejs: Map,
+MyMap.
+
+W szablonie zadania 1, które stworzyłeś podczas lab. 3 dodaj do modułu utils klasę
+MyMap implementującą inteface Map (z metodami jak niżej):
+public interface Map<K, V> {
+ /**
+ * Dodanie elementu do mapy pod podanym kluczem.
+ Jeśli podany klucz istnieje to metoda powinna podmienić wartość.
+ * @param key klucz (nie null)
+ * @param value wartość kryjącą się pod kluczem (nie null)
+ * @return true jeśli się uda dodać element, false jeśli nie
+ */
+ boolean put(K key, V value);
+ /**
+ * Usunięcie podanego klucza oraz wartości, która jest przechowywana pod tym
+kluczem.
+ * @param key klucz do usunięcia
+ * @return true jeśli uda się usunać klucz, false w przeciwnym przypadku
+ */
+ boolean remove(K key);
+ /**
+ * Zwraca wartość pod podanym kluczem lub null jeśli nie ma podanego klucza.
+ * @param key klucz (nie ull)
+ * @return wartość pod kluczem lub null jeśli nie ma wartości dla podanego klucza
+ */
+ V get(K key);
+ /**
+ * Zwraca listę kluczy
+ * @return java.util.List lista kluczy
+ */
+ List<K> keys();
+ /**
+ * Sprawdza czy podany klucz istnieje w mapie.
+ * @param key wartość klucza do sprawdzenia.
+ * @return true jeśli klucz istnieje.
+ */
+ boolean contains(K key);
+}
+
+
+1. Przemyśl swój projekt zadania 1: zapewnij żeby można było rozszerzać
+funkcjonalności programu hotelowego bez zmiany istniejącego kodu (dodawać
+obsługę nowych komend bez jakiejkolwiek zmiany w istniejącym kodzie: wykorzystaj
+mechanizmy dziedziczenia i generics – zobacz na instrukcję pomocniczą poniżej).
+2. Na bazie informacji z referatu z lab 4 spróbuj skonfigurować analizator statyczny
+kodu SonarQube i dokonać analizy pokrycia swojego kodu testami (kod zadania 1).
+3. Podepnij analizę do maven
+(https://docs.sonarqube.org/latest/analysis/scan/sonarscanner-for-maven), zapewnij
+badania pokrycia kodu testami.
+4. Dokonaj analizy raportu dla bieżącego stanu Twojego projektu nr 1.
+5. Dokonaj refaktoryzacji kodu na podstawie raportu w celu wyeliminowania
+problemów klasy critical i major
+
+
+Sposób prezentacji działania programu
+Czas na zademonstrowanie poprawnego działania programu to tylko 5-7 minut na osobę
+zatem należy się bardzo dobrze przygotować do prezentacji.
+1. Należy zademonstrować działanie programu na hoście lokalnym wraz z działaniem
+wszystkich komend.
+2. W przypadku realizacji bonusów należy zademonstrować wczytanie pliku CSV na
+starcie programu, eksport do pliku a następnie ponowne uruchomienie programu i
+wczytanie wcześniej wyeksportowanego pliku.
+3. Po demonstracji działania programu należy pokazać raport z SonarCube wraz z
+pokryciem testami – wymagane pokrycie ok. 60-70% kodu testami – nie trzeba
+pokrywać testami kodu tzw. „boiler plate” np. getterów/setterów.
+Program powinien być przygotowany jako projekt mavenowy w oparciu o wytyczne z zajęć 4
+i 5 (zalecany szablon do wykorzystania to: multi-module.zip).
+Sposób dostarczenia zadania zaliczeniowego
+Po zaliczeniu zadania zaliczeniowego należy dostarczyć je jako załącznik ZIP wiadomości
+mailowej o nazwie składającej się z pierwszej litery imienia, nazwiska, sufiksu -zadanie1 i
+rozszerzenia zip (np. jnowak-zadanie1.zip). ZIP’owany projekt musi zawierać oprócz kodu
+programu 3 rzeczy:
+a. Plik readme.txt umieszczony w katalogu głównym projektu (na poziomie
+macierzystego pom.xml). W pliku tym powinny się znaleźć istotne informacje
+dot. działania/uruchomienia programu.
+2. Raport z SonarCube jako plik PDF powinien być w katalogu głównym w podkatalogu
+sonar-qube.
+3. Katalog javadoc umieszczony w katalog głównym zawierający wygenerowaną
+dokumentację klas.
+Przed wykonaniem ZIP’a należy wyczyścić projekt (polecenie: mvn clean). Paczka z
+zadaniem zaliczeniowym powinna być dostarczona w mailu o tytule:
+[PZ1] Imię nazwisko – grupa – zadanie 1
+gdzie:
+• grupa przyjmuje możliwe wartości: środa 8, środa 9:45, środa 11:30, poniedziałek
+18:30
+Np.:
+[PZ1] Jan Nowak – środa 8 – zadanie 1
+Dostarczenie mailowe zadania jest warunkiem wpisania oceny. Projekty zaprezentowane
+na zajęciach, dla których nie zostały wysłane maile zostaną ocenione na 2.0. Dostarczenie
+maila po terminie wskazanym poniżej skutkuje obniżeniem oceny o 1 stopień. Brak
+pokazania zadania na zajęciach w terminie ustalonym dla zaliczenia zadania skutkuje
+obniżeniem oceny z tego zadania o 1 stopień przy zaliczaniu w terminie późniejszym.
+Termin zaliczenia zadania 1:
+• dla grupy poniedziałkowej: 17.11.2023
+• dla grup środowych: 19.11.2023
+Termin dostarczenia maila z zadaniem
+• dla grupy poniedziałkowej: 17.11.2023 godz. 22
+• dla grup środowych: 19.11.2022 godz. 16
+
+
+Dodatkowe wskazówki do realizacji zadania nr 1
+Zastosowanie wzorca projektowego Factory – stworzyć rejestr komend (uwaga: założenie, że
+stosujemy wzorzec projektowy Strategy tj. wszystkie komendy rozszerzają klasę abstrakcyjną
+Command, która posiada metodę abstrackyjną excecute):
+public class CommandRegistry {
+ private final Map<String, Class<? extends Command>> commandMap = new HashMap<>();
+ // Register commands in the factory
+ public void registerCommand(String name, Class<? extends Command> commandClass) {
+ commandMap.put(name, commandClass);
+ }
+ // Create a command instance based on the string
+ public Command createCommand(String commandName) {
+ Class<? extends Command> commandClass = commandMap.get(commandName);
+ if (commandClass == null) {
+ throw new IllegalArgumentException("Unknown command: " + commandName);
+ }
+ try {
+ return commandClass.getDeclaredConstructor().newInstance();
+ } catch (Exception e) {
+ throw new RuntimeException("Failed to create command instance", e);
+ }
+ }
+}
+W metodzie main:
+CommandRegistry commandFactory = new CommandRegistry();
+commandFactory.registerCommand("checkin", CheckinCommand.class);
+commandFactory.registerCommand("checkout", CheckoutCommand.class);
+commandFactory.registerCommand("view", ViewCommand.class);
+commandFactory.registerCommand("list", ListCommand.class);
+commandFactory.registerCommand("save", SaveCommand.class);
+commandFactory.registerCommand("exit", ExitCommand.class);
+while (true) {
+ Scanner scanner = new Scanner(System.in);
+ System.out.print("Please enter the command - valid commands are: view, list, checkin,
+checkout, save, exit: ");
+ System.out.println();
+ String cmd = scanner.nextLine();
+ Command command = commandFactory.createCommand(cmd);
+ command.setHotel(hotel);
+ if (command == null) {
+ System.err.println("No such command, please try again...");
+ continue;
+ }
+ command.execute();
+}
+Zalety:
+1. Extensibility: dodanie nowej komendy wymaga utworzenia nowej klasy dziedziczącej
+po Command (alternatywa to zdefiniowanie interfejsu Command) oraz
+zarejestrowania jej w fabrce w metodzie main.
+2. Open/Closed Principle: system jest otwarty na rozszerzenia i zamknięty na zmiany
+(nie są wymagane żadne zmiany w istniejącym kodzie podczas dodawania nowych
+funkcjonalności do programu).
+3. Dynamic Loading: teoretycznie można nawet ładować komendy z zewnętrznych
+źródeł.
+Dodatkowe rozszerzenie – auto rejestracja komend
+Żeby uniknąć rejestrowania komend w metodzie main można skanować pakiet z komendami
+z wykorzystaniem mechanizmu refleksji (jest do tego biblioteka Reflections, która to ułatwia,
+ale można poprzez classpath scanning).

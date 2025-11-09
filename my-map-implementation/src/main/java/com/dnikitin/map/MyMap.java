@@ -15,7 +15,7 @@ import java.util.*;
  * @param <K> the type of keys maintained by this map
  * @param <V> the type of mapped values
  */
-public class MyMap<K, V> implements Map<K, V> {
+public class MyMap<K, V> implements Map<K, V>, Iterable<java.util.Map.Entry<K, V>> {
 
     // FIELDS
 
@@ -116,6 +116,7 @@ public class MyMap<K, V> implements Map<K, V> {
         return keys;
     }
 
+
     // PUBLIC UTILITY METHODS
 
     /**
@@ -134,6 +135,19 @@ public class MyMap<K, V> implements Map<K, V> {
      */
     public boolean isEmpty() {
         return size == 0;
+    }
+
+    /**
+     * Returns an iterator over the entries in this map, providing them in
+     * ascending key order (in-order traversal).
+     * <p>
+     * This method is required by the {@link Iterable} interface.
+     *
+     * @return an in-order iterator over the entries (key-value pairs) in this map.
+     */
+    @Override
+    public Iterator<java.util.Map.Entry<K, V>> iterator() {
+        return new EntryIterator();
     }
 
     // PRIVATE UTILITY METHODS
@@ -213,6 +227,8 @@ public class MyMap<K, V> implements Map<K, V> {
         }
         return node.balance();
     }
+
+
 
     // INNER CLASSES (NODE(ENTRY) AND ENTRY_ITERATOR)
 
