@@ -1,8 +1,5 @@
-package com.dnikitin.hotel;
+package com.dnikitin.hotel.model;
 
-import com.dnikitin.hotel.model.Guest;
-import com.dnikitin.hotel.model.Reservation;
-import com.dnikitin.hotel.model.Room;
 import com.dnikitin.map.MyMap;
 import com.dnikitin.map.Map;
 
