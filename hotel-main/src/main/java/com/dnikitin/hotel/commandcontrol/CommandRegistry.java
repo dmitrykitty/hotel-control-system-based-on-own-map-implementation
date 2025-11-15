@@ -15,7 +15,7 @@ public class CommandRegistry {
         autoRegisterCommands();
     }
 
-    public void autoRegisterCommands() {
+    private void autoRegisterCommands() {
         Reflections reflections = new Reflections("com.dnikitin.hotel.commandcontrol.commands");
         Set<Class<? extends Command>> commandClasses = reflections.getSubTypesOf(Command.class);
         for (Class<? extends Command> commandClass : commandClasses) {

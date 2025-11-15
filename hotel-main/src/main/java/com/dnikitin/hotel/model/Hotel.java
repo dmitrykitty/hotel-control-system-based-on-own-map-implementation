@@ -1,5 +1,6 @@
 package com.dnikitin.hotel.model;
 
+import com.dnikitin.hotel.commandcontrol.commandutils.ConsoleFormatter;
 import com.dnikitin.map.MyMap;
 import com.dnikitin.map.Map;
 
@@ -57,4 +58,35 @@ public class Hotel {
         return checkIn(roomNumber, mainGuest, others, checkInDate, duration);
     }
 
+    public void showRoomInfo(Room room) {
+        ConsoleFormatter.printHeader("Information about room " + room.getRoomNumber());
+        ConsoleFormatter.printProperty("Price per night:", room.getPrice() + "$");
+        ConsoleFormatter.printProperty("Room capacity: ", room.getCapacity());
+
+        if (room.isFree()) {
+            ConsoleFormatter.printProperty("Status: ", "free");
+
+        } else {
+            ConsoleFormatter.printProperty("Status: ", "busy");
+
+            Reservation reservation = room.getReservation();
+
+            ConsoleFormatter.printHeader("Reservation information");
+            ConsoleFormatter.printProperty("Main guest: ", reservation.mainGuest().name());
+            ConsoleFormatter.printProperty("Checkin date:", reservation.checkinDate().toString());
+
+            LocalDate checkoutDate = reservation.checkinDate().plusDays(reservation.duration());
+            ConsoleFormatter.printProperty("Checkout date:", checkoutDate.toString());
+
+            List<Guest> additionalGuests = reservation.additionalGuests();
+            if (additionalGuests.isEmpty()) {
+                ConsoleFormatter.printProperty("Additional guests:", "None");
+            } else {
+                ConsoleFormatter.printProperty("Additional guests:", additionalGuests.size() + " persons");
+                for (Guest additionalGuest : additionalGuests) {
+                    ConsoleFormatter.printProperty("", additionalGuest.name());
+                }
+            }
+        }
+    }
 }

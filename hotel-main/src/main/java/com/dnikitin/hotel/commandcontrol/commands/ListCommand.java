@@ -2,12 +2,63 @@ package com.dnikitin.hotel.commandcontrol.commands;
 
 import com.dnikitin.hotel.commandcontrol.Command;
 import com.dnikitin.hotel.commandcontrol.commandutils.CommandName;
-import com.dnikitin.hotel.model.Hotel;
+import com.dnikitin.hotel.commandcontrol.commandutils.ConsoleFormatter;
+import com.dnikitin.hotel.model.Guest;
+import com.dnikitin.hotel.model.Reservation;
+import com.dnikitin.hotel.model.Room;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @CommandName("list")
 public class ListCommand extends Command {
 
     @Override
     public void execute() {
+        if (hotel == null) {
+            throw new IllegalStateException("Command not initialized. 'hotel' is null.");
+        }
+
+        List<Room> rooms = hotel.getRooms();
+
+
+        String format = "| %-8s | %-10s | %-15s | %-12s | %-12s |%n";
+        int tableWidth = 67; // 8 + 10 + 15 + 12 + 12 + (separatory)
+
+
+        ConsoleFormatter.printHeader("ALL ROOMS INFORMATION");
+        ConsoleFormatter.printSeparator(tableWidth);
+        ConsoleFormatter.printRow(format, "Room Number", "Status", "Main guest", "Checkin date", "Check out date");
+        ConsoleFormatter.printSeparator(tableWidth);
+
+
+        if (rooms.isEmpty()) {
+            ConsoleFormatter.printRow(format, " (No room available)", "---", "---", "---", "---");
+        } else {
+            for (Room room : rooms) {
+                if (room.isFree()) {
+                    ConsoleFormatter.printRow(format, room.getRoomNumber(), "Free", "---", "---", "---");
+                } else {
+                    Reservation res = room.getReservation();
+                    Guest guest = res.mainGuest();
+                    LocalDate checkin = res.checkinDate();
+                    LocalDate checkout = checkin.plusDays(res.duration());
+
+                    ConsoleFormatter.printRow(format,
+                            room.getRoomNumber(),
+                            "Busy",
+                            guest.name(),
+                            checkin.toString(),
+                            checkout.toString()
+                    );
+                }
+            }
+        }
+
+
+        ConsoleFormatter.printSeparator(tableWidth);
+        System.out.println();
+
     }
 }
+
