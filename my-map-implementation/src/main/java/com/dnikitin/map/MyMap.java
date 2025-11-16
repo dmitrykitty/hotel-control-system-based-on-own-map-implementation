@@ -57,6 +57,37 @@ public class MyMap<K, V> implements Map<K, V>, Iterable<java.util.Map.Entry<K, V
         this.comparator = (k1, k2) -> ((Comparable<K>) k1).compareTo(k2);
     }
 
+    /**
+     * Constructs a new map containing the same mappings as the specified map.
+     * <p>
+     * The new map will be ordered according to the {@linkplain Comparable natural
+     * ordering} of its keys. All keys inserted into the new map must
+     * implement the {@code Comparable} interface.
+     * <p>
+     * This constructor iterates over the given map's entry set and inserts each
+     * mapping into this map, which results in an O(N log N) runtime, where N
+     * is the number of entries in the given map.
+     *
+     * @param m the map whose mappings are to be placed in this map
+     * @throws NullPointerException if the specified map or any of its keys
+     *                              or values are null
+     * @throws ClassCastException   if any key in {@code m} does not implement
+     *                              {@code Comparable}
+     */
+    public MyMap(java.util.Map<? extends K, ? extends V> m) {
+        // 1. Call the default constructor to initialize the
+        //    comparator to use natural ordering.
+        this();
+
+        // 2. Iterate over the entry set of the provided map
+        //    and add each entry to this map.
+        for (java.util.Map.Entry<? extends K, ? extends V> entry : m.entrySet()) {
+            // Use the put() method, which handles balancing.
+            this.put(entry.getKey(), entry.getValue());
+        }
+    }
+
+
     // PUBLIC METHODS FROM MAP INTERFACE (java doc description provided in Map interface)
 
 
@@ -122,7 +153,7 @@ public class MyMap<K, V> implements Map<K, V>, Iterable<java.util.Map.Entry<K, V
      * This operation is constant time (O(1)).
      */
     @Override
-    public void clear(){
+    public void clear() {
         root = null;
         size = 0;
     }
@@ -238,7 +269,6 @@ public class MyMap<K, V> implements Map<K, V>, Iterable<java.util.Map.Entry<K, V
         }
         return node.balance();
     }
-
 
 
     // INNER CLASSES (NODE(ENTRY) AND ENTRY_ITERATOR)

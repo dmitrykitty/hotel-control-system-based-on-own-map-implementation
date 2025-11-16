@@ -1,17 +1,20 @@
 package com.dnikitin.hotel.model;
 
+import com.dnikitin.hotel.exceptions.RoomOccupiedException;
+import com.dnikitin.hotel.exceptions.RoomSmallCapacityException;
+
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
 public class Room {
     private final int roomNumber;
-    private final int price;
+    private final double price;
     private final int capacity;
 
     private Reservation reservation;
 
-    public Room(int number, int price, int capacity) {
+    public Room(int number, double price, int capacity) {
         this.roomNumber = number;
         this.price = price;
         this.capacity = capacity;
@@ -24,12 +27,10 @@ public class Room {
 
     public boolean checkIn(Reservation reservation) {
         if (!isFree()) {
-            System.err.println("Room is already reserved");
-            return false;
+            throw new RoomOccupiedException("Room" + roomNumber + "already occupied");
         }
         if (reservation.additionalGuests().size() + 1 > capacity) {
-            System.err.println("To many guests for this room");
-            return false;
+            throw new RoomSmallCapacityException("Too many guest. Room capacity is" + capacity);
         }
         this.reservation = reservation;
         return true;
@@ -37,8 +38,7 @@ public class Room {
 
     public double checkOut() {
         if (isFree()) {
-            System.err.println("Room is not reserved");
-            return 0.0;
+            throw new RoomOccupiedException("Room" + roomNumber + "already occupied");
         }
 
         long diff = ChronoUnit.DAYS.between(reservation.checkinDate(), LocalDate.now());
@@ -52,7 +52,7 @@ public class Room {
         return roomNumber;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 
