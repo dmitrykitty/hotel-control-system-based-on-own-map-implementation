@@ -150,17 +150,17 @@ public class Hotel {
         return allRooms;
     }
 
-    public boolean checkIn(int roomNumber, Guest mainGuest, List<Guest> others, LocalDate checkInDate, int duration) {
+    public void checkIn(int roomNumber, Guest mainGuest, List<Guest> others, LocalDate checkInDate, int duration) {
         if (!rooms.contains(roomNumber)) {
             throw new RoomNotFoundException("Room with number" + roomNumber + " does not exists");
         }
         Reservation reservation = new Reservation(mainGuest, others, checkInDate, duration);
-        return rooms.get(roomNumber).checkIn(reservation);
+        rooms.get(roomNumber).checkIn(reservation);
     }
 
-    public boolean checkIn(int roomNumber, Guest mainGuest, List<Guest> others, int duration) {
+    public void checkIn(int roomNumber, Guest mainGuest, List<Guest> others, int duration) {
         LocalDate checkInDate = LocalDate.now();
-        return checkIn(roomNumber, mainGuest, others, checkInDate, duration);
+        checkIn(roomNumber, mainGuest, others, checkInDate, duration);
     }
 
     public void showRoomInfo(Room room) {

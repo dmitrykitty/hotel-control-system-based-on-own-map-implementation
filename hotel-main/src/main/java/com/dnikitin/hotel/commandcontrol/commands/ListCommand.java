@@ -21,14 +21,12 @@ public class ListCommand extends Command {
 
         List<Room> rooms = hotel.getRooms();
 
-
-        String format = "| %-12s | %-10s | %-15s | %-12s | %-12s |%n";
-        int tableWidth = 77; // 8 + 10 + 15 + 12 + 12 + (separatory)
-
+        String format = "| %-8s | %-10s | %-25s | %-13s | %-13s |%n";
+        int tableWidth = 85; // 8 + 10 + 15 + 12 + 12 + (separatory)
 
         ConsoleFormatter.printHeader("ALL ROOMS INFORMATION");
         ConsoleFormatter.printSeparator(tableWidth);
-        ConsoleFormatter.printRow(format, "Room Number", "Status", "Main guest", "Checkin date", "Check out date");
+        ConsoleFormatter.printRow(format, "Room Nr", "Status", "Main guest", "Checkin date", "Checkout date");
         ConsoleFormatter.printSeparator(tableWidth);
 
 
@@ -39,22 +37,30 @@ public class ListCommand extends Command {
                 if (room.isFree()) {
                     ConsoleFormatter.printRow(format, room.getRoomNumber(), "Free", "---", "---", "---");
                 } else {
-                    Reservation res = room.getReservation();
-                    Guest guest = res.mainGuest();
-                    LocalDate checkin = res.checkinDate();
-                    LocalDate checkout = checkin.plusDays(res.duration());
+                    String checkoutDate = "---";
 
-                    ConsoleFormatter.printRow(format,
-                            room.getRoomNumber(),
-                            "Busy",
-                            guest.name(),
-                            checkin.toString(),
-                            checkout.toString()
-                    );
+                    Reservation res = room.getReservation();
+                    if (res != null) {
+                        Guest guest = res.mainGuest();
+                        LocalDate checkin = res.checkinDate();
+                        String guestName = (guest != null) ? guest.name() : "---";
+                        String checkinDate = (checkin != null) ? checkin.toString() : "---";
+
+                        if (checkin != null) {
+                            checkoutDate = checkin.plusDays(res.duration()).toString();
+                        }
+
+                        ConsoleFormatter.printRow(format,
+                                room.getRoomNumber(),
+                                "Occupied",
+                                guestName,
+                                checkinDate,
+                                checkoutDate
+                        );
+                    }
                 }
             }
         }
-
 
         ConsoleFormatter.printSeparator(tableWidth);
         System.out.println();

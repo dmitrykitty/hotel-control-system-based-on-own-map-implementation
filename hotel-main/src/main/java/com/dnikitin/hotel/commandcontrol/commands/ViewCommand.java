@@ -1,21 +1,23 @@
 package com.dnikitin.hotel.commandcontrol.commands;
 
 import com.dnikitin.hotel.commandcontrol.Command;
+import com.dnikitin.hotel.commandcontrol.InteractiveCommand;
 import com.dnikitin.hotel.commandcontrol.commandutils.CommandName;
 import com.dnikitin.hotel.model.Room;
 
 import java.util.Scanner;
 
 @CommandName("view")
-public class ViewCommand extends Command {
+public class ViewCommand extends Command implements InteractiveCommand {
+
+    private Scanner scanner;
 
     @Override
     public void execute() {
-        Scanner scanner = new Scanner(System.in);
         System.out.println("What nr of the room you are interested in?");
 
         try {
-            int roomNumber = Integer.parseInt(scanner.nextLine());
+            int roomNumber = Integer.parseInt(scanner.nextLine().trim());
             Room room = hotel.getRoom(roomNumber);
             if (room == null) {
                 System.err.println("Incorrect room number");
@@ -24,7 +26,12 @@ public class ViewCommand extends Command {
 
             }
         } catch (NumberFormatException e){
-            System.err.println("Error: provided non integers character");
+            System.err.println("Error: Invalid number provided. Please enter digits only.");
         }
+    }
+
+    @Override
+    public void setScanner(Scanner scanner) {
+        this.scanner = scanner;
     }
 }

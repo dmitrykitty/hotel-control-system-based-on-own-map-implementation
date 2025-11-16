@@ -1,5 +1,6 @@
 package com.dnikitin.hotel.model;
 
+import com.dnikitin.hotel.exceptions.RoomFreeException;
 import com.dnikitin.hotel.exceptions.RoomOccupiedException;
 import com.dnikitin.hotel.exceptions.RoomSmallCapacityException;
 
@@ -27,7 +28,7 @@ public class Room {
 
     public boolean checkIn(Reservation reservation) {
         if (!isFree()) {
-            throw new RoomOccupiedException("Room" + roomNumber + "already occupied");
+            throw new RoomOccupiedException("Room " + roomNumber + " already occupied");
         }
         if (reservation.additionalGuests().size() + 1 > capacity) {
             throw new RoomSmallCapacityException("Too many guest. Room capacity is" + capacity);
@@ -38,7 +39,7 @@ public class Room {
 
     public double checkOut() {
         if (isFree()) {
-            throw new RoomOccupiedException("Room" + roomNumber + "already occupied");
+            throw new RoomFreeException("Room " + roomNumber + " is free");
         }
 
         long diff = ChronoUnit.DAYS.between(reservation.checkinDate(), LocalDate.now());

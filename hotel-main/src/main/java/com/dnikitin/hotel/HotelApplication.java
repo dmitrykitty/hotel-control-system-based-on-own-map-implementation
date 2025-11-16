@@ -2,6 +2,7 @@ package com.dnikitin.hotel;
 
 import com.dnikitin.hotel.commandcontrol.Command;
 import com.dnikitin.hotel.commandcontrol.CommandRegistry;
+import com.dnikitin.hotel.commandcontrol.InteractiveCommand;
 import com.dnikitin.hotel.commandcontrol.commandutils.ConsoleFormatter;
 import com.dnikitin.hotel.model.Guest;
 import com.dnikitin.hotel.model.Hotel;
@@ -10,7 +11,7 @@ import com.dnikitin.hotel.model.Room;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class HotelRunner {
+public class HotelApplication {
     public static void main(String[] args) {
 
         // --- 1. FAZA KONFIGURACJI ---
@@ -61,6 +62,9 @@ public class HotelRunner {
 
                 // 2. Wstrzyknij stan (Hotel) do komendy (zgodnie z Twoim projektem)
                 command.setHotel(hotel);
+                if(command instanceof InteractiveCommand){
+                    ((InteractiveCommand) command).setScanner(scanner);
+                }
 
                 // 3. Wykonaj STRATEGIĘ (polimorfizm)
                 command.execute();
@@ -94,9 +98,7 @@ public class HotelRunner {
         hotel.addRoom(new Room(202, 450, 4));
         hotel.addRoom(new Room(301, 180, 1));
 
-        // Możesz tu też dodać "testową" rezerwację, aby 'list' nie był pusty
         hotel.checkIn(101, new Guest("Jan Kowalski"), new ArrayList<>(), 2);
-
         System.out.println("Załadowano " + hotel.getRooms().size() + " pokoi.");
     }
 
