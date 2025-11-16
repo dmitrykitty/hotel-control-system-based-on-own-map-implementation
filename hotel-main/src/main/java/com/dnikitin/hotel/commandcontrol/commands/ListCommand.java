@@ -22,8 +22,8 @@ public class ListCommand extends Command {
         List<Room> rooms = hotel.getRooms();
 
 
-        String format = "| %-8s | %-10s | %-15s | %-12s | %-12s |%n";
-        int tableWidth = 67; // 8 + 10 + 15 + 12 + 12 + (separatory)
+        String format = "| %-12s | %-10s | %-15s | %-12s | %-12s |%n";
+        int tableWidth = 77; // 8 + 10 + 15 + 12 + 12 + (separatory)
 
 
         ConsoleFormatter.printHeader("ALL ROOMS INFORMATION");
