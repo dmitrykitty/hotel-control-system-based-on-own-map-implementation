@@ -35,4 +35,10 @@ public interface Map<K, V> {
      * @return true jeśli klucz istnieje.
      */
     boolean contains(K key);
+
+    int size();
+
+    void clear();
+
+    boolean isEmpty();
 }

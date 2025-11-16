@@ -116,23 +116,34 @@ public class MyMap<K, V> implements Map<K, V>, Iterable<java.util.Map.Entry<K, V
         return keys;
     }
 
-
-    // PUBLIC UTILITY METHODS
+    /**
+     * Removes all of the mappings from this map.
+     * The map will be empty after this call returns.
+     * This operation is constant time (O(1)).
+     */
+    @Override
+    public void clear(){
+        root = null;
+        size = 0;
+    }
 
     /**
      * Returns the number of key-value mappings in this map.
      *
      * @return the number of entries in this map
      */
+    @Override
     public int size() {
         return size;
     }
+
 
     /**
      * Returns {@code true} if this map contains no key-value mappings.
      *
      * @return {@code true} if this map is empty
      */
+    @Override
     public boolean isEmpty() {
         return size == 0;
     }
