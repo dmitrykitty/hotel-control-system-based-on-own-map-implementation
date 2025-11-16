@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class HotelApplication {
-    public static void main(String[] args) {
+    static void main(String[] args) {
 
         // --- 1. FAZA KONFIGURACJI ---
 

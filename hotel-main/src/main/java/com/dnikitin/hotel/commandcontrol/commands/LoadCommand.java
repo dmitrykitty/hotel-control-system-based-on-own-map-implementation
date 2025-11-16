@@ -8,29 +8,27 @@ import com.dnikitin.hotel.exceptions.HotelDataException;
 
 import java.util.Scanner;
 
-@CommandName("save")
-public class SaveCommand extends Command implements InteractiveCommand {
-
+@CommandName("load")
+public class LoadCommand extends Command implements InteractiveCommand {
     Scanner scanner;
 
     @Override
     public void execute() {
-        if (hotel == null) {
+        if(hotel == null){
             throw new IllegalStateException("Command not initialized. Call setHotel(hotel) before executing.");
         }
-        System.out.println("Provide the name of the file where you want to save hotel state or press Enter for "
-                + CommandConstants.DEFAULT_FILENAME + " filename:");
+        System.out.println("Enter filename to load (press Enter for '" + CommandConstants.DEFAULT_FILENAME + "'): ");
         String filename = scanner.nextLine();
 
         if (filename.isBlank()) {
             filename = CommandConstants.DEFAULT_FILENAME;
         }
-        try {
-            hotel.saveRoomsToFile(filename);
-        } catch (HotelDataException e) {
-            System.err.println("Error saving hotel state: " + e.getMessage());
-        }
 
+        try {
+            hotel.loadRoomsFromFile(filename);
+        } catch (HotelDataException e) {
+            System.err.println("Error loading hotel state: " + e.getMessage());
+        }
     }
 
     @Override
