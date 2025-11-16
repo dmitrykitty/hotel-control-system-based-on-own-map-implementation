@@ -4,103 +4,114 @@ import com.dnikitin.hotel.commandcontrol.Command;
 import com.dnikitin.hotel.commandcontrol.CommandRegistry;
 import com.dnikitin.hotel.commandcontrol.InteractiveCommand;
 import com.dnikitin.hotel.commandcontrol.commandutils.ConsoleFormatter;
+import com.dnikitin.hotel.exceptions.HotelDataException;
 import com.dnikitin.hotel.model.Guest;
 import com.dnikitin.hotel.model.Hotel;
 import com.dnikitin.hotel.model.Room;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class HotelApplication {
-    static void main(String[] args) {
+    public static void main(String[] args) {
 
-        // --- 1. FAZA KONFIGURACJI ---
+        // CONFIGURATION PHASE
 
-        // Stwórz główny obiekt stanu aplikacji
         Hotel hotel = new Hotel();
+        if (args.length > 0) {
+            String filename = args[0];
+            System.out.println("Attempting to load hotel state from argument: " + filename);
+            try {
+                hotel.loadRoomsFromFile(filename);
+            } catch (HotelDataException e) {
+                System.err.println("ERROR: Could not load data from file: " + e.getMessage());
+                System.out.println("Loading default hardcoded data instead.");
+                initializeHotelData(hotel); // Fallback to default data
+            }
+        } else {
+            System.out.println("No file path provided. Loading default hardcoded data.");
+            initializeHotelData(hotel);
+        }
 
-        // Wypełnij hotel danymi (zamiast wczytywania z pliku na tym etapie)
-        initializeHotelData(hotel);
-
-        // Stwórz fabrykę komend.
-        // Fabryka automatycznie przeskanuje pakiety w poszukiwaniu klas @CommandName.
         CommandRegistry commandFactory = new CommandRegistry();
 
-        // Stwórz scanner (POZA pętlą!) do czytania wejścia od użytkownika
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
 
-        System.out.println("Witaj w systemie zarządzania hotelem.");
-        System.out.println("Wpisz 'exit', aby zakończyć, lub 'help' (jeśli masz taką komendę).");
+        System.out.println("Welcome to the Hotel Management System.");
+        System.out.println("Type 'help' for a list of commands or 'exit' to quit.");
 
-        // --- 2. GŁÓWNA PĘTLA APLIKACJI (REPL) ---
+        // MAIN APPLICATION LOOP
 
         while (running) {
-            System.out.print("\n> "); // Znak zachęty
+            System.out.print("\n> ");
             String input = scanner.nextLine();
 
-            // Przypadek 1: Puste wejście
+            // Empty input -> continue
             if (input == null || input.isBlank()) {
                 continue;
             }
 
-            // Przypadek 2: Komenda wyjścia (specjalna obsługa)
+            // Exit command
             if (input.equalsIgnoreCase("exit")) {
                 running = false;
-                continue; // Pomiń resztę pętli
+                continue;
             }
 
+            // Help command
             if (input.equalsIgnoreCase("help")) {
-                showMenu(); // Wywołaj metodę pomocniczą
-                continue; // Pomiń resztę pętli
+                showMenu();
+                continue;
             }
 
-            // --- 3. WZORZEC FABRYKI I STRATEGII W AKCJI ---
+            // FACTORY AND STRATEGY PATTERN
             try {
-                // 1. Użyj FABRYKI, aby stworzyć "pusty" obiekt komendy
                 Command command = commandFactory.createCommand(input.toLowerCase());
 
-                // 2. Wstrzyknij stan (Hotel) do komendy (zgodnie z Twoim projektem)
                 command.setHotel(hotel);
-                if(command instanceof InteractiveCommand){
+                if (command instanceof InteractiveCommand) {
                     ((InteractiveCommand) command).setScanner(scanner);
                 }
 
-                // 3. Wykonaj STRATEGIĘ (polimorfizm)
                 command.execute();
 
             } catch (IllegalArgumentException e) {
-                // Ten błąd jest rzucany przez Twoją fabrykę, gdy komenda jest nieznana
-                System.err.println("BŁĄD: Nieznana komenda '" + input + "'");
+                System.err.println("ERROR: Unknown command '" + input + "'. Type 'help' for options.");
             } catch (IllegalStateException e) {
-                // Ten błąd rzucisz, jeśli hotel nie został ustawiony (dobra praktyka)
-                System.err.println("BŁĄD WEWNĘTRZNY: " + e.getMessage());
+                System.err.println("INTERNAL ERROR: " + e.getMessage());
             } catch (Exception e) {
-                // Złap wszystkie inne błędy z logiki komendy (np. zły format daty)
-                System.err.println("Wystąpił nieoczekiwany błąd: " + e.getMessage());
-                // e.printStackTrace(); // Odkomentuj to, aby pomóc w debugowaniu
+                System.err.println("An unexpected error occurred: " + e.getMessage());
             }
         }
 
-        // --- 4. SPRZĄTANIE ---
         scanner.close();
-        System.out.println("Zamykanie aplikacji... Do widzenia!");
+        System.out.println("Shutting down application... Goodbye!");
     }
 
-    /**
-     * Metoda pomocnicza do "zahardkodowania" danych hotelu na starcie.
-     */
+
     private static void initializeHotelData(Hotel hotel) {
-        System.out.println("Ładowanie konfiguracji pokoi...");
-        hotel.addRoom(new Room(101, 250, 2)); // nr, cena, pojemność
-        hotel.addRoom(new Room(102, 300, 2));
+        System.out.println("Loading default room configuration...");
+
+        hotel.addRoom(new Room(101, 250, 2)); // nr, price, capacity
+        hotel.addRoom(new Room(102, 250, 2));
+        hotel.addRoom(new Room(103, 275, 2));
+        hotel.addRoom(new Room(104, 220, 1));
+
         hotel.addRoom(new Room(201, 400, 3));
         hotel.addRoom(new Room(202, 450, 4));
-        hotel.addRoom(new Room(301, 180, 1));
+        hotel.addRoom(new Room(203, 650, 4));
 
-        hotel.checkIn(101, new Guest("Jan Kowalski"), new ArrayList<>(), 2);
-        System.out.println("Załadowano " + hotel.getRooms().size() + " pokoi.");
+        hotel.addRoom(new Room(301, 180, 1));
+        hotel.addRoom(new Room(302, 180, 1));
+
+        hotel.checkIn(101, new Guest("John Doe"), new ArrayList<>(), 2);
+        hotel.checkIn(202, new Guest("Alice Smith"),
+                List.of(new Guest("Bob Smith"), new Guest("Charlie Smith")), 5);
+
+        System.out.println("Loaded " + hotel.getRooms().size() + " rooms.");
     }
+
 
     private static void showMenu() {
         ConsoleFormatter.printHeader("HOTEL MANAGEMENT SYSTEM - AVAILABLE COMMANDS");
@@ -110,7 +121,8 @@ public class HotelApplication {
         ConsoleFormatter.printProperty("view", "Show detailed information for a specific room.");
         ConsoleFormatter.printProperty("checkin", "Check a guest into a room.");
         ConsoleFormatter.printProperty("checkout", "Check a guest out of a room.");
-        ConsoleFormatter.printProperty("save", "Save the current hotel state to a file.");
+        ConsoleFormatter.printProperty("save", "Save the current hotel state to a file (Bonus 2).");
+        ConsoleFormatter.printProperty("load", "Load hotel state from a file (Bonus 1).");
         ConsoleFormatter.printProperty("help", "Display this help menu.");
         ConsoleFormatter.printProperty("exit", "Exit the application.");
     }
