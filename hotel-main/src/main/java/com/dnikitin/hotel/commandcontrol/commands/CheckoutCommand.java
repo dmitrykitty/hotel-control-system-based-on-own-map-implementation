@@ -11,6 +11,10 @@ import com.dnikitin.hotel.model.Room;
 import java.time.LocalDate;
 import java.util.Scanner;
 
+/**
+ * Handles the interactive logic for checking a guest out of a room.
+ * It prompts for the room number, performs the checkout, and prints the total bill.
+ */
 @CommandName("checkout")
 public class CheckoutCommand extends Command implements InteractiveCommand {
 

@@ -16,6 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Handles the interactive logic for checking a guest into a room.
+ * It prompts for room number, guest details, duration, and check-in date.
+ */
 @CommandName("checkin")
 public class CheckinCommand extends Command implements InteractiveCommand {
     private Scanner scanner;

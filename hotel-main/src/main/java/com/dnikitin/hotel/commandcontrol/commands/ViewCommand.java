@@ -7,6 +7,10 @@ import com.dnikitin.hotel.model.Room;
 
 import java.util.Scanner;
 
+/**
+ * Handles the interactive logic for viewing detailed information about a single room.
+ * It prompts the user for a room number.
+ */
 @CommandName("view")
 public class ViewCommand extends Command implements InteractiveCommand {
 

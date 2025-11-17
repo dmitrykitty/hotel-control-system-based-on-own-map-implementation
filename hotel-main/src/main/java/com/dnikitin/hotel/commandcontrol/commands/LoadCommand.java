@@ -8,6 +8,10 @@ import com.dnikitin.hotel.exceptions.HotelDataException;
 
 import java.util.Scanner;
 
+/**
+ * Handles the interactive logic for loading the hotel state from a CSV file.
+ * It prompts the user for a filename.
+ */
 @CommandName("load")
 public class LoadCommand extends Command implements InteractiveCommand {
     Scanner scanner;

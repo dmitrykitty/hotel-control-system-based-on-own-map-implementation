@@ -18,7 +18,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+/**
+ * Represents the entire hotel, managing all rooms, reservations,
+ * and data persistence (loading/saving to CSV).
+ */
 public class Hotel {
 
     private final Map<Integer, Room> rooms;
@@ -26,12 +29,20 @@ public class Hotel {
             "RoomNumber", "Capacity", "Price",
             "GuestName", "CheckinDate", "Duration", "AdditionalGuests"
     };
+    /**
+     * CSV format for parsing (reading) files.
+     * Assumes file has a header and skips it.
+     */
     private static final CSVFormat STATE_FORMAT_PARSER = CSVFormat.Builder.create(CSVFormat.DEFAULT)
             .setDelimiter(';')
             .setHeader(STATE_HEADERS)
             .setSkipHeaderRecord(true)   // skip header when reading
             .get();
 
+    /**
+     * CSV format for printing (writing) files.
+     * Includes the header in the output.
+     */
     private static final CSVFormat STATE_FORMAT_PRINTER = CSVFormat.Builder.create(CSVFormat.DEFAULT)
             .setDelimiter(';')
             .setHeader(STATE_HEADERS)
@@ -39,14 +50,30 @@ public class Hotel {
             .get();
 
 
+    /**
+     * Constructs a new, empty Hotel.
+     */
     public Hotel() {
         this.rooms = new MyMap<Integer, Room>();
     }
 
+    /**
+     * Adds a new room to the hotel's room map.
+     *
+     * @param room The room to add.
+     */
     public void addRoom(Room room) {
         rooms.put(room.getRoomNumber(), room);
     }
 
+    /**
+     * Loads the entire hotel state (rooms and reservations) from a CSV file.
+     * This will clear any existing room data in the hotel.
+     *
+     * @param path The file system path to the CSV file.
+     * @throws HotelDataException if an I/O error occurs or if the data
+     * in the file is malformed (e.g., bad number/date).
+     */
     public void loadRoomsFromFile(String path) throws HotelDataException {
         Map<Integer, Room> tempRooms = new MyMap<>();
         long currentLine = 1;
@@ -110,6 +137,13 @@ public class Hotel {
         }
     }
 
+    /**
+     * Saves the current hotel state (all rooms and reservations) to a CSV file.
+     * The output is sorted by room number.
+     *
+     * @param path The file system path to write to.
+     * @throws HotelDataException if an I/O error occurs during writing.
+     */
     public void saveRoomsToFile(String path) throws HotelDataException {
         List<Room> roomsList = getRooms();
         roomsList.sort(Comparator.comparingInt(Room::getRoomNumber));
@@ -149,10 +183,21 @@ public class Hotel {
         }
     }
 
+    /**
+     * Retrieves a room by its number.
+     *
+     * @param roomNumber The number of the room to find.
+     * @return The {@link Room} object, or {@code null} if not found.
+     */
     public Room getRoom(int roomNumber) {
         return rooms.get(roomNumber);
     }
 
+    /**
+     * Gets a list of all rooms in the hotel.
+     *
+     * @return A {@link List} containing all {@link Room} objects.
+     */
     public List<Room> getRooms() {
         List<Room> allRooms = new ArrayList<>();
         // O(n)
@@ -162,6 +207,16 @@ public class Hotel {
         return allRooms;
     }
 
+    /**
+     * Checks a guest into a specific room with a given date.
+     *
+     * @param roomNumber    The room number.
+     * @param mainGuest     The main guest.
+     * @param others        A list of additional guests.
+     * @param checkInDate   The specific date of check-in.
+     * @param duration      The duration of the stay in nights.
+     * @throws RoomNotFoundException if the room number does not exist.
+     */
     public void checkIn(int roomNumber, Guest mainGuest, List<Guest> others, LocalDate checkInDate, int duration) {
         if (!rooms.contains(roomNumber)) {
             throw new RoomNotFoundException("Room with number " + roomNumber + " does not exists");
@@ -170,11 +225,27 @@ public class Hotel {
         rooms.get(roomNumber).checkIn(reservation);
     }
 
+    /**
+     * Checks a guest into a specific room, assuming the check-in date is today.
+     *
+     * @param roomNumber    The room number.
+     * @param mainGuest     The main guest.
+     * @param others        A list of additional guests.
+     * @param duration      The duration of the stay in nights.
+     * @throws RoomNotFoundException if the room number does not exist.
+     */
     public void checkIn(int roomNumber, Guest mainGuest, List<Guest> others, int duration) {
         LocalDate checkInDate = LocalDate.now();
         checkIn(roomNumber, mainGuest, others, checkInDate, duration);
     }
 
+    /**
+     * Checks out a guest from a specific room number.
+     *
+     * @param roomNumber The room number to check out.
+     * @return The calculated bill for the stay.
+     * @throws RoomNotFoundException if the room number does not exist.
+     */
     public double checkOut(int roomNumber) {
         Room room = rooms.get(roomNumber);
         if (room == null) {
@@ -183,6 +254,12 @@ public class Hotel {
         return room.checkOut();
     }
 
+    /**
+     * Prints a formatted, detailed view of a single room's information
+     * and reservation details (if any) to the console.
+     *
+     * @param room The room to display.
+     */
     public void showRoomInfo(Room room) {
         ConsoleFormatter.printHeader("Information about room " + room.getRoomNumber());
         ConsoleFormatter.printProperty("Price per night", room.getPrice() + "$");

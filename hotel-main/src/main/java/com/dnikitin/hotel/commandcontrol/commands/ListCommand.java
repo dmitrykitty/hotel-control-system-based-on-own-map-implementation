@@ -10,6 +10,10 @@ import com.dnikitin.hotel.model.Room;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Handles the logic for listing all rooms in the hotel, showing their
+ * status, main guest, and reservation dates.
+ */
 @CommandName("list")
 public class ListCommand extends Command {
 

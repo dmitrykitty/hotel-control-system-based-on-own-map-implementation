@@ -36,9 +36,23 @@ public interface Map<K, V> {
      */
     boolean contains(K key);
 
+    /**
+     * Returns the number of key-value mappings in this map.
+     *
+     * @return the number of key-value mappings in this map
+     */
     int size();
 
+    /**
+     * Removes all of the mappings from this map.
+     * The map will be empty after this call returns.
+     */
     void clear();
 
+    /**
+     * Returns {@code true} if this map contains no key-value mappings.
+     *
+     * @return {@code true} if this map contains no key-value mappings
+     */
     boolean isEmpty();
 }

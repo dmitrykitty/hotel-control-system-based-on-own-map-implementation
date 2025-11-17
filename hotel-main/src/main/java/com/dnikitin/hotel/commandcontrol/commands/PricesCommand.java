@@ -8,6 +8,9 @@ import com.dnikitin.hotel.model.Room;
 
 import java.util.List;
 
+/**
+ * Handles the logic for displaying a list of all rooms and their prices per night.
+ */
 @CommandName("prices")
 public class PricesCommand extends Command {
 

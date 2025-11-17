@@ -13,7 +13,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Main entry point for the Hotel Management System.
+ * This class initializes the application state (Hotel), sets up the command registry,
+ * and runs the main Read-Eval-Print Loop (REPL) to process user commands.
+ */
 public class HotelApplication {
+    /**
+     * The main method that starts the application.
+     *
+     * @param args Command-line arguments. If an argument is provided,
+     * it is treated as a path to a CSV file to load on startup.
+     */
     public static void main(String[] args) {
 
         // CONFIGURATION PHASE
@@ -42,7 +53,7 @@ public class HotelApplication {
         System.out.println("Welcome to the Hotel Management System.");
         System.out.println("Type 'help' for a list of commands or 'exit' to quit.");
 
-        // MAIN APPLICATION LOOP
+        // MAIN APPLICATION LOOP(REPL)
 
         while (running) {
             System.out.print("\n> ");
@@ -90,6 +101,12 @@ public class HotelApplication {
     }
 
 
+    /**
+     * Populates the hotel with a default set of rooms and reservations.
+     * This method is used as a fallback if no data file is provided on startup.
+     *
+     * @param hotel The hotel instance to populate.
+     */
     private static void initializeHotelData(Hotel hotel) {
         System.out.println("Loading default room configuration...");
 
@@ -113,6 +130,9 @@ public class HotelApplication {
     }
 
 
+    /**
+     * Prints the help menu with all available commands to the console.
+     */
     private static void showMenu() {
         ConsoleFormatter.printHeader("HOTEL MANAGEMENT SYSTEM - AVAILABLE COMMANDS");
 
@@ -121,8 +141,8 @@ public class HotelApplication {
         ConsoleFormatter.printProperty("view", "Show detailed information for a specific room.");
         ConsoleFormatter.printProperty("checkin", "Check a guest into a room.");
         ConsoleFormatter.printProperty("checkout", "Check a guest out of a room.");
-        ConsoleFormatter.printProperty("save", "Save the current hotel state to a file (Bonus 2).");
-        ConsoleFormatter.printProperty("load", "Load hotel state from a file (Bonus 1).");
+        ConsoleFormatter.printProperty("save", "Save the current hotel state to a file.");
+        ConsoleFormatter.printProperty("load", "Load hotel state from a file.");
         ConsoleFormatter.printProperty("help", "Display this help menu.");
         ConsoleFormatter.printProperty("exit", "Exit the application.");
     }

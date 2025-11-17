@@ -8,6 +8,10 @@ import com.dnikitin.hotel.exceptions.HotelDataException;
 
 import java.util.Scanner;
 
+/**
+ * Handles the interactive logic for saving the current hotel state to a CSV file.
+ * It prompts the user for a filename.
+ */
 @CommandName("save")
 public class SaveCommand extends Command implements InteractiveCommand {
 
