@@ -9,6 +9,7 @@
 
     <name>hotel-control-system</name>
     <url>http://maven.apache.org</url>
+
     <modules>
         <module>my-map-implementation</module>
         <module>hotel-main</module>
@@ -69,6 +70,27 @@
                                 <goal>integration-test</goal>
                                 <goal>verify</goal>
                             </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.14</version>
+                    <executions>
+                        <execution>
+                            <id>prepare-agent</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>generate-jacoco-report</id>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                            <phase>prepare-package</phase>
                         </execution>
                     </executions>
                 </plugin>
