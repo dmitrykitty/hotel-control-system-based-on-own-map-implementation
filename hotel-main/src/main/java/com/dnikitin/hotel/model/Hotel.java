@@ -284,7 +284,7 @@ public class Hotel {
             if (additionalGuests.isEmpty()) {
                 ConsoleFormatter.printProperty("Additional guests", "None");
             } else {
-                ConsoleFormatter.printProperty("Additional guests", additionalGuests.size() + " persons");
+                ConsoleFormatter.printProperty("Additional guests", additionalGuests.size());
                 for (Guest additionalGuest : additionalGuests) {
                     ConsoleFormatter.printProperty("", additionalGuest.name());
                 }

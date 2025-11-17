@@ -50,7 +50,7 @@ public class HotelApplication {
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
 
-        System.out.println("Welcome to the Hotel Management System.");
+        ConsoleFormatter.printHeader("Welcome to the Hotel Management System");
         System.out.println("Type 'help' for a list of commands or 'exit' to quit.");
 
         // MAIN APPLICATION LOOP(REPL)
@@ -97,7 +97,7 @@ public class HotelApplication {
         }
 
         scanner.close();
-        System.out.println("Shutting down application... Goodbye!");
+        ConsoleFormatter.printHeader("Shutting down application... Goodbye!");
     }
 
 
