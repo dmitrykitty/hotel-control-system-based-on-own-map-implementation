@@ -30,6 +30,9 @@ public class CheckoutCommand extends Command implements InteractiveCommand {
             if (room == null) {
                 throw new RoomNotFoundException("Room with number " + roomNumber + " does not exist.");
             }
+            if (room.isFree()) {
+                throw new RoomFreeException("Room " + roomNumber + " is free");
+            }
             if(room.getReservation().checkinDate().isAfter(LocalDate.now()))
                 throw new IllegalArgumentException("You can't checkout before your checkin date");
 

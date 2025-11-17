@@ -22,12 +22,13 @@ public class ListCommandTest {
     private ByteArrayOutputStream outContent;
 
     private Hotel hotel;
-    private Command cmd;
+    private ListCommand cmd;
 
     @BeforeEach
-    void setUpStreams() {
-        System.setOut(new PrintStream(outContent));
+    void setUp() {
         outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
+
 
         hotel = new Hotel();
         cmd = new ListCommand();
