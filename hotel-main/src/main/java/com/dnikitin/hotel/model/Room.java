@@ -26,7 +26,7 @@ public class Room {
         return reservation == null;
     }
 
-    public boolean checkIn(Reservation reservation) {
+    public void checkIn(Reservation reservation) {
         if (!isFree()) {
             throw new RoomOccupiedException("Room " + roomNumber + " already occupied");
         }
@@ -34,7 +34,6 @@ public class Room {
             throw new RoomSmallCapacityException("Too many guest. Room capacity is" + capacity);
         }
         this.reservation = reservation;
-        return true;
     }
 
     public double checkOut() {

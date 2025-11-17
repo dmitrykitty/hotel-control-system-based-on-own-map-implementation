@@ -12,7 +12,9 @@ import org.apache.commons.csv.CSVRecord;
 
 import java.io.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,10 +26,16 @@ public class Hotel {
             "RoomNumber", "Capacity", "Price",
             "GuestName", "CheckinDate", "Duration", "AdditionalGuests"
     };
-    private static final CSVFormat STATE_FORMAT = CSVFormat.Builder.create(CSVFormat.DEFAULT)
+    private static final CSVFormat STATE_FORMAT_PARSER = CSVFormat.Builder.create(CSVFormat.DEFAULT)
             .setDelimiter(';')
             .setHeader(STATE_HEADERS)
-            .setSkipHeaderRecord(true)
+            .setSkipHeaderRecord(true)   // skip header when reading
+            .get();
+
+    private static final CSVFormat STATE_FORMAT_PRINTER = CSVFormat.Builder.create(CSVFormat.DEFAULT)
+            .setDelimiter(';')
+            .setHeader(STATE_HEADERS)
+            .setSkipHeaderRecord(false)  // write header when saving
             .get();
 
 
@@ -44,23 +52,23 @@ public class Hotel {
         long currentLine = 1;
 
         try (Reader reader = new FileReader(path);
-             CSVParser parser = new CSVParser(reader, STATE_FORMAT)) {
+             CSVParser parser = new CSVParser(reader, STATE_FORMAT_PARSER)) {
 
             for (CSVRecord record : parser) {
                 currentLine = record.getRecordNumber();
 
-                int roomNumber = Integer.parseInt(record.get("RoomNumber"));
-                double price = Double.parseDouble(record.get("Price"));
-                int capacity = Integer.parseInt(record.get("Capacity"));
+                int roomNumber = Integer.parseInt(record.get("RoomNumber").trim());
+                double price = Double.parseDouble(record.get("Price").trim());
+                int capacity = Integer.parseInt(record.get("Capacity").trim());
 
                 Room room = new Room(roomNumber, price, capacity);
 
-                String mainGuestName = record.get("GuestName");
+                String mainGuestName = record.get("GuestName").trim();
 
                 if (mainGuestName != null && !mainGuestName.isBlank()) {
                     Guest mainGuest = new Guest(mainGuestName);
-                    LocalDate checkin = LocalDate.parse(record.get("CheckinDate"));
-                    int duration = Integer.parseInt(record.get("Duration"));
+                    LocalDate checkin = LocalDate.parse(record.get("CheckinDate").trim());
+                    int duration = Integer.parseInt(record.get("Duration").trim());
 
                     List<Guest> additionalGuests = new ArrayList<>();
                     String additionalGuestsString = record.get("AdditionalGuests");
@@ -93,7 +101,10 @@ public class Hotel {
             ConsoleFormatter.printHeader("Successfully read and saved " + rooms.size() + " rooms");
         } catch (IOException e) {
             throw new HotelDataException("Error reading file (I/O): " + path, e);
-        } catch (Exception e) {
+        } catch (DateTimeParseException e) {
+            throw new HotelDataException("Error parsing data in file near line " +
+                    currentLine + ": " + e.getParsedString(), e);
+        } catch (NumberFormatException e) {
             throw new HotelDataException("Error parsing data in file near line " +
                     currentLine + ": " + e.getMessage(), e);
         }
@@ -101,9 +112,10 @@ public class Hotel {
 
     public void saveRoomsToFile(String path) throws HotelDataException {
         List<Room> roomsList = getRooms();
+        roomsList.sort(Comparator.comparingInt(Room::getRoomNumber));
 
         try (Writer writer = new FileWriter(path);
-             CSVPrinter printer = new CSVPrinter(writer, STATE_FORMAT)) {
+             CSVPrinter printer = new CSVPrinter(writer, STATE_FORMAT_PRINTER)) {
             for (Room room : roomsList) {
                 if (room.isFree()) {
                     printer.printRecord(
@@ -133,7 +145,7 @@ public class Hotel {
             }
             ConsoleFormatter.printHeader("Successfully saved to the file " + rooms.size() + " rooms");
         } catch (IOException e) {
-            throw new HotelDataException("Error reading file (I/O): " + path, e);
+            throw new HotelDataException("Error writing file (I/O): " + path, e);
         }
     }
 
@@ -152,7 +164,7 @@ public class Hotel {
 
     public void checkIn(int roomNumber, Guest mainGuest, List<Guest> others, LocalDate checkInDate, int duration) {
         if (!rooms.contains(roomNumber)) {
-            throw new RoomNotFoundException("Room with number" + roomNumber + " does not exists");
+            throw new RoomNotFoundException("Room with number " + roomNumber + " does not exists");
         }
         Reservation reservation = new Reservation(mainGuest, others, checkInDate, duration);
         rooms.get(roomNumber).checkIn(reservation);
@@ -161,6 +173,14 @@ public class Hotel {
     public void checkIn(int roomNumber, Guest mainGuest, List<Guest> others, int duration) {
         LocalDate checkInDate = LocalDate.now();
         checkIn(roomNumber, mainGuest, others, checkInDate, duration);
+    }
+
+    public double checkOut(int roomNumber) {
+        Room room = rooms.get(roomNumber);
+        if (room == null) {
+            throw new RoomNotFoundException("Room with number " + roomNumber + " does not exist");
+        }
+        return room.checkOut();
     }
 
     public void showRoomInfo(Room room) {

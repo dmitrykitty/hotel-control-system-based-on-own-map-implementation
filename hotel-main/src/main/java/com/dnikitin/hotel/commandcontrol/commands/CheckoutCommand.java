@@ -33,7 +33,7 @@ public class CheckoutCommand extends Command implements InteractiveCommand {
             if(room.getReservation().checkinDate().isAfter(LocalDate.now()))
                 throw new IllegalArgumentException("You can't checkout before your checkin date");
 
-            double amount = room.checkOut();
+            double amount = hotel.checkOut(roomNumber);
             System.out.printf("Room %d has been checked out. Total due: %.2f$%n", roomNumber, amount);
             System.out.println();
         } catch (NumberFormatException e) {
