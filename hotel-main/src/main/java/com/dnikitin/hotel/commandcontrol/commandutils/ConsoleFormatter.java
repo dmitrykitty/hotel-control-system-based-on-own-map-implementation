@@ -6,6 +6,8 @@ package com.dnikitin.hotel.commandcontrol.commandutils;
  */
 public class ConsoleFormatter {
 
+    private ConsoleFormatter(){}
+
     /**
      * Prints a single, formatted table row.
      *

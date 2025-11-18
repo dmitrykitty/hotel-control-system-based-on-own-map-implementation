@@ -18,6 +18,10 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>25</maven.compiler.release>
+
+        <sonar.projectKey>sonar-demo</sonar.projectKey>
+        <sonar.projectName>sonar-demo</sonar.projectName>
+        <sonar.host.url>http://localhost:9000</sonar.host.url>
     </properties>
 
     <dependencyManagement>

@@ -38,37 +38,41 @@ public class ListCommand extends Command {
             ConsoleFormatter.printRow(format, " (No room available)", "---", "---", "---", "---");
         } else {
             for (Room room : rooms) {
-                if (room.isFree()) {
-                    ConsoleFormatter.printRow(format, room.getRoomNumber(), "Free", "---", "---", "---");
-                } else {
-                    String checkoutDate = "---";
-
-                    Reservation res = room.getReservation();
-                    if (res != null) {
-                        Guest guest = res.mainGuest();
-                        LocalDate checkin = res.checkinDate();
-                        String guestName = (guest != null) ? guest.name() : "---";
-                        String checkinDate = (checkin != null) ? checkin.toString() : "---";
-
-                        if (checkin != null) {
-                            checkoutDate = checkin.plusDays(res.duration()).toString();
-                        }
-
-                        ConsoleFormatter.printRow(format,
-                                room.getRoomNumber(),
-                                "Occupied",
-                                guestName,
-                                checkinDate,
-                                checkoutDate
-                        );
-                    }
-                }
+                showRoomInfo(room, format);
             }
         }
 
         ConsoleFormatter.printSeparator(tableWidth);
         System.out.println();
 
+    }
+
+    private void showRoomInfo(Room room, String format) {
+        if (room.isFree()) {
+            ConsoleFormatter.printRow(format, room.getRoomNumber(), "Free", "---", "---", "---");
+        } else {
+            String checkoutDate = "---";
+
+            Reservation res = room.getReservation();
+            if (res != null) {
+                Guest guest = res.mainGuest();
+                LocalDate checkin = res.checkinDate();
+                String guestName = (guest != null) ? guest.name() : "---";
+                String checkinDate = (checkin != null) ? checkin.toString() : "---";
+
+                if (checkin != null) {
+                    checkoutDate = checkin.plusDays(res.duration()).toString();
+                }
+
+                ConsoleFormatter.printRow(format,
+                        room.getRoomNumber(),
+                        "Occupied",
+                        guestName,
+                        checkinDate,
+                        checkoutDate
+                );
+            }
+        }
     }
 }
 

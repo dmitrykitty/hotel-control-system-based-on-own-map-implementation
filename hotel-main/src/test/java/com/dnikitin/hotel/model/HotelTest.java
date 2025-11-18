@@ -45,11 +45,14 @@ public class HotelTest {
     @Test
     public void checkInNonExistentRoomFails() {
         Room rm = new Room(999, 250.0, 3);
+        int roomNumber = rm.getRoomNumber();
+        Guest guest = new Guest("Test");
+        List<Guest> additionalGuests = List.of();
         RoomNotFoundException roomNotFoundException = assertThrows(RoomNotFoundException.class,
-                () -> hotel.checkIn(rm.getRoomNumber(), new Guest("Test"), List.of(), 1)
+                () -> hotel.checkIn(roomNumber, guest, additionalGuests, 1)
         );
 
-        assertEquals("Room with number " + rm.getRoomNumber() + " does not exists",
+        assertEquals("Room with number " + roomNumber + " does not exists",
                 roomNotFoundException.getMessage()
         );
     }
@@ -171,10 +174,10 @@ public class HotelTest {
         Path file = tempDir.resolve("guests.csv");
         Files.writeString(file, header + System.lineSeparator() + row);
 
-        Hotel hotel = new Hotel();
-        hotel.loadRoomsFromFile(file.toString());
+        Hotel newHotel = new Hotel();
+        newHotel.loadRoomsFromFile(file.toString());
 
-        Room r = hotel.getRoom(303);
+        Room r = newHotel.getRoom(303);
         assertNotNull(r);
         assertFalse(r.isFree());
         assertEquals(2, r.getReservation().additionalGuests().size());

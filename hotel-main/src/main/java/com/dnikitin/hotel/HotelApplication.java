@@ -4,7 +4,9 @@ import com.dnikitin.hotel.commandcontrol.Command;
 import com.dnikitin.hotel.commandcontrol.CommandRegistry;
 import com.dnikitin.hotel.commandcontrol.InteractiveCommand;
 import com.dnikitin.hotel.commandcontrol.commandutils.ConsoleFormatter;
+import com.dnikitin.hotel.exceptions.CommandCreationException;
 import com.dnikitin.hotel.exceptions.HotelDataException;
+import com.dnikitin.hotel.exceptions.InvalidCommandException;
 import com.dnikitin.hotel.model.Guest;
 import com.dnikitin.hotel.model.Hotel;
 import com.dnikitin.hotel.model.Room;
@@ -21,14 +23,29 @@ import java.util.Scanner;
 public class HotelApplication {
     /**
      * The main method that starts the application.
+     * Its complexity is now low, as it delegates setup and loop logic.
      *
-     * @param args Command-line arguments. If an argument is provided,
-     * it is treated as a path to a CSV file to load on startup.
+     * @param args Command-line arguments.
      */
     public static void main(String[] args) {
 
-        // CONFIGURATION PHASE
+        // configuration
+        Hotel hotel = setupHotel(args);
 
+        //main loop
+        runMainLoop(hotel);
+
+        ConsoleFormatter.printHeader("Shutting down application... Goodbye!");
+    }
+
+    /**
+     * Handles the initial setup of the Hotel object, either by loading
+     * from a file argument or initializing default data.
+     *
+     * @param args Command-line arguments passed to main.
+     * @return A fully initialized Hotel object.
+     */
+    private static Hotel setupHotel(String[] args) {
         Hotel hotel = new Hotel();
         if (args.length > 0) {
             String filename = args[0];
@@ -44,7 +61,15 @@ public class HotelApplication {
             System.out.println("No file path provided. Loading default hardcoded data.");
             initializeHotelData(hotel);
         }
+        return hotel;
+    }
 
+    /**
+     * Runs the main Read-Eval-Print Loop (REPL) for the application.
+     *
+     * @param hotel The initialized Hotel object.
+     */
+    private static void runMainLoop(Hotel hotel){
         CommandRegistry commandFactory = new CommandRegistry();
 
         Scanner scanner = new Scanner(System.in);
@@ -77,27 +102,40 @@ public class HotelApplication {
             }
 
             // FACTORY AND STRATEGY PATTERN
-            try {
-                Command command = commandFactory.createCommand(input.toLowerCase());
-
-                command.setHotel(hotel);
-                if (command instanceof InteractiveCommand) {
-                    ((InteractiveCommand) command).setScanner(scanner);
-                }
-
-                command.execute();
-
-            } catch (IllegalArgumentException e) {
-                System.err.println("ERROR: Unknown command '" + input + "'. Type 'help' for options.");
-            } catch (IllegalStateException e) {
-                System.err.println("INTERNAL ERROR: " + e.getMessage());
-            } catch (Exception e) {
-                System.err.println("An unexpected error occurred: " + e.getMessage());
-            }
+            executeCommand(hotel, commandFactory, input, scanner);
         }
 
         scanner.close();
         ConsoleFormatter.printHeader("Shutting down application... Goodbye!");
+    }
+
+    /**
+     * Tries to create and execute a command based on user input.
+     * All exceptions are caught and printed to System.err.
+     *
+     * @param input          The raw input string from the user.
+     * @param commandFactory The registry to create commands from.
+     * @param hotel          The hotel instance.
+     * @param scanner        The scanner for interactive commands.
+     */
+    private static void executeCommand(Hotel hotel, CommandRegistry commandFactory, String input, Scanner scanner) {
+        try {
+            Command command = commandFactory.createCommand(input.toLowerCase());
+
+            command.setHotel(hotel);
+            if (command instanceof InteractiveCommand) {
+                ((InteractiveCommand) command).setScanner(scanner);
+            }
+
+            command.execute();
+
+        } catch (InvalidCommandException e) {
+            System.err.println("ERROR: Unknown command '" + input + "'. Type 'help' for options.");
+        } catch (CommandCreationException e) {
+            System.err.println("INTERNAL ERROR: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("An unexpected error occurred: " + e.getMessage());
+        }
     }
 
 

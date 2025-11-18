@@ -1,9 +1,14 @@
 package com.dnikitin.map;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
+import java.util.Map;
+import java.util.stream.Stream;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -126,51 +131,40 @@ public class MyMapTest {
     }
 
 
-    //Testing of AVL private methods correct working
-    @Test
-    public void testBalancingAfterLeftLeftCase() {
-        map.put(30, "A");
-        map.put(20, "B");
-        map.put(10, "C"); // rotateRight()
+    /**
+     * Tests AVL tree balancing for all rotation cases (LL, RR, LR, RL).
+     * Regardless of insertion order, the resulting map should contain keys in sorted order (10, 20, 30)
+     * and have a size of 3.
+     */
+    @ParameterizedTest(name = "{index} => insertionOrder={0}")
+    @MethodSource("balancingCases")
+    public void testBalancingAfterInsertions(List<Integer> insertionOrder) {
+        // 1. Insert keys in the specific order provided by the test case
+        for (Integer key : insertionOrder) {
+            map.put(key, "val-" + key);
+        }
 
-
+        // 2. Verify the tree structure and size
+        // The keys() method performs an in-order traversal, which must always result
+        // in a sorted list (10, 20, 30) if the AVL tree is balanced correctly.
         List<Integer> expectedKeyOrder = List.of(10, 20, 30);
-        assertEquals(expectedKeyOrder, map.keys());
-        assertEquals(3, map.size());
+
+        assertAll(
+                () -> assertEquals(expectedKeyOrder, map.keys(), "Keys should be sorted after balancing"),
+                () -> assertEquals(3, map.size(), "Size should be 3")
+        );
     }
 
-    @Test
-    public void testBalancingAfterRightRightCase() {
-        map.put(10, "A");
-        map.put(20, "B");
-        map.put(30, "C"); // rotateLeft()
-
-        List<Integer> expectedKeyOrder = List.of(10, 20, 30);
-        assertEquals(expectedKeyOrder, map.keys());
-        assertEquals(3, map.size());
+    // Provides test data: keys to insert in specific orders to trigger rotations
+    private static Stream<Arguments> balancingCases() {
+        return Stream.of(
+                Arguments.of(List.of(30, 20, 10)), // Left-Left Case -> rotateRight
+                Arguments.of(List.of(10, 20, 30)), // Right-Right Case -> rotateLeft
+                Arguments.of(List.of(30, 10, 20)), // Left-Right Case -> rotateLeftRight
+                Arguments.of(List.of(10, 30, 20))  // Right-Left Case -> rotateRightLeft
+        );
     }
 
-    @Test
-    public void testBalancingAfterLeftRightCase() {
-        map.put(30, "A");
-        map.put(10, "B");
-        map.put(20, "C"); // rotateLeftRight()
-
-        List<Integer> expectedKeyOrder = List.of(10, 20, 30);
-        assertEquals(expectedKeyOrder, map.keys());
-        assertEquals(3, map.size());
-    }
-
-    @Test
-    public void testBalancingAfterRightLeftCase() {
-        map.put(10, "A");
-        map.put(30, "B");
-        map.put(20, "C"); // rotateRightLeft()
-
-        List<Integer> expectedKeyOrder = List.of(10, 20, 30);
-        assertEquals(expectedKeyOrder, map.keys());
-        assertEquals(3, map.size());
-    }
 
     @Test
     public void putNullKeyOrValueShouldReturnFalse() {
@@ -228,12 +222,14 @@ public class MyMapTest {
 
     @Test
     public void iteratorNextOnEmptyMapShouldThrowException() {
-        assertThrows(NoSuchElementException.class, () -> map.iterator().next());
+        Iterator<Map.Entry<Integer, String>> iterator = map.iterator();
+        assertThrows(NoSuchElementException.class, iterator::next);
     }
 
     @Test
     public void testRemoveNodeWithTwoChildren() {
         map.put(20, "A"); // root
+
         map.put(10, "B"); // left
         map.put(30, "C"); // right
         map.put(25, "D"); // right-left

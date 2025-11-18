@@ -81,33 +81,24 @@ public class Hotel {
         try (Reader reader = new FileReader(path);
              CSVParser parser = new CSVParser(reader, STATE_FORMAT_PARSER)) {
 
-            for (CSVRecord record : parser) {
-                currentLine = record.getRecordNumber();
+            for (CSVRecord csvRecord : parser) {
+                currentLine = csvRecord.getRecordNumber();
 
-                int roomNumber = Integer.parseInt(record.get("RoomNumber").trim());
-                double price = Double.parseDouble(record.get("Price").trim());
-                int capacity = Integer.parseInt(record.get("Capacity").trim());
+                int roomNumber = Integer.parseInt(csvRecord.get("RoomNumber").trim());
+                double price = Double.parseDouble(csvRecord.get("Price").trim());
+                int capacity = Integer.parseInt(csvRecord.get("Capacity").trim());
 
                 Room room = new Room(roomNumber, price, capacity);
 
-                String mainGuestName = record.get("GuestName").trim();
+                String mainGuestName = csvRecord.get("GuestName").trim();
 
                 if (mainGuestName != null && !mainGuestName.isBlank()) {
                     Guest mainGuest = new Guest(mainGuestName);
-                    LocalDate checkin = LocalDate.parse(record.get("CheckinDate").trim());
-                    int duration = Integer.parseInt(record.get("Duration").trim());
+                    LocalDate checkin = LocalDate.parse(csvRecord.get("CheckinDate").trim());
+                    int duration = Integer.parseInt(csvRecord.get("Duration").trim());
 
-                    List<Guest> additionalGuests = new ArrayList<>();
-                    String additionalGuestsString = record.get("AdditionalGuests");
-
-                    if (additionalGuestsString != null && !additionalGuestsString.isBlank()) {
-                        // "|" as separator for additional guests
-                        String[] guestNames = additionalGuestsString.split("\\|");
-
-                        for (String guestName : guestNames) {
-                            additionalGuests.add(new Guest(guestName));
-                        }
-                    }
+                    String additionalGuestsString = csvRecord.get("AdditionalGuests");
+                    List<Guest> additionalGuests = parseAdditionalGuestsList(additionalGuestsString);
 
                     Reservation reservation = new Reservation(
                             mainGuest,
@@ -290,5 +281,25 @@ public class Hotel {
                 }
             }
         }
+    }
+
+    //PRIVATE HELPERS
+    /**
+     * Parses the pipe-separated string of additional guests into a List.
+     *
+     * @param additionalGuestsString The raw string from the CSV record (e.g., "G1|G2").
+     * @return A List of Guest objects, or an empty list if the string is blank.
+     */
+    private List<Guest> parseAdditionalGuestsList(String additionalGuestsString) {
+        List<Guest> additionalGuests = new ArrayList<>();
+        if (additionalGuestsString != null && !additionalGuestsString.isBlank()) {
+            // "|" as separator for additional guests
+            String[] guestNames = additionalGuestsString.split("\\|");
+
+            for (String guestName : guestNames) {
+                additionalGuests.add(new Guest(guestName));
+            }
+        }
+        return additionalGuests;
     }
 }

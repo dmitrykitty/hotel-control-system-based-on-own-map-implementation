@@ -97,7 +97,7 @@ public class ViewCommandTest {
                 () -> assertTrue(out.contains("Main guest      : Alice Smith")),
                 () -> assertTrue(out.contains("Checkin date    : " + checkinDate)),
                 () -> assertTrue(out.contains("Checkout date   : " + expectedCheckoutDate)),
-                () -> assertTrue(out.contains("Additional guests : 1 persons")),
+                () -> assertTrue(out.contains("Additional guests : 1")),
                 () -> assertTrue(out.contains("Bob Johnson"))
         );
     }

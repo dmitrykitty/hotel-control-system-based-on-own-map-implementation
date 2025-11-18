@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.dnikitin.hotel.commandcontrol.commandutils.CommandName;
+import com.dnikitin.hotel.exceptions.CommandCreationException;
+import com.dnikitin.hotel.exceptions.InvalidCommandException;
 import org.reflections.Reflections;
 
 /**
@@ -50,12 +52,12 @@ public class CommandRegistry {
     public Command createCommand(String commandName) {
         Class<? extends Command> commandClass = commandMap.get(commandName);
         if (commandClass == null) {
-            throw new IllegalArgumentException("Unknown command: " + commandName);
+            throw new InvalidCommandException("Unknown command: " + commandName);
         }
         try {
             return commandClass.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create command instance", e);
+            throw new CommandCreationException("Failed to create command instance", e);
         }
     }
 }
