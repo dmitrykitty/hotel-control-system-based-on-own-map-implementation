@@ -34,8 +34,6 @@ public class HotelApplication {
 
         //main loop
         runMainLoop(hotel);
-
-        ConsoleFormatter.printHeader("Shutting down application... Goodbye!");
     }
 
     /**
