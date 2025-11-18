@@ -2,6 +2,7 @@ package com.dnikitin.hotel.commandcontrol;
 
 import com.dnikitin.hotel.commandcontrol.commands.CheckinCommand;
 import com.dnikitin.hotel.commandcontrol.commands.CheckoutCommand;
+import com.dnikitin.hotel.exceptions.InvalidCommandException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,7 +28,7 @@ public class CommandRegistryTest {
     public void unknownCommandThrowsHelpfulError() {
         CommandRegistry registry = new CommandRegistry();
 
-        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+        InvalidCommandException ex = assertThrows(InvalidCommandException.class,
                 () -> registry.createCommand("does-not-exist"));
 
         assertTrue(ex.getMessage().startsWith("Unknown command:"));

@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html","k":"18"},{"l":"com.dnikitin.hotel"},{"l":"com.dnikitin.hotel.commandcontrol"},{"l":"com.dnikitin.hotel.commandcontrol.commands"},{"l":"com.dnikitin.hotel.commandcontrol.commandutils"},{"l":"com.dnikitin.hotel.exceptions"},{"l":"com.dnikitin.hotel.model"},{"l":"com.dnikitin.map"}];updateSearchResults();
